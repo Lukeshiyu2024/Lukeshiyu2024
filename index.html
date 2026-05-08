@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>文件命名规范校验器</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0;
+        font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        background: #f5f7fb;
+        color: #1f2937;
+      }
+      .container {
+        max-width: 860px;
+        margin: 40px auto;
+        padding: 24px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      }
+      h1 { margin-top: 0; }
+      .hint {
+        background: #eef6ff;
+        border: 1px solid #bfdbfe;
+        padding: 12px;
+        border-radius: 8px;
+        line-height: 1.6;
+      }
+      textarea, input {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 10px;
+        font-size: 14px;
+        margin-top: 8px;
+      }
+      textarea { min-height: 160px; resize: vertical; }
+      .row { margin: 18px 0; }
+      .buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+      button {
+        border: none;
+        background: #2563eb;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      button.secondary { background: #4b5563; }
+      button:hover { opacity: 0.92; }
+      .result { margin-top: 18px; }
+      .ok { color: #15803d; font-weight: 600; }
+      .bad { color: #b91c1c; font-weight: 600; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th, td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: top;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 2px 5px;
+        border-radius: 4px;
+      }
+      @media (max-width: 640px) {
+        .container { margin: 16px; padding: 16px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>项目文件命名规范校验器</h1>
+      <p>把待审核文件名粘贴进来（每行一个），系统将自动判定是否符合规范。</p>
+
+      <div class="hint">
+        <div><strong>默认规范</strong>：<code>项目代号_文件类型_主题_版本_日期.扩展名</code></div>
+        <div>例如：<code>PRJ01_需求文档_登录流程_V1_20260508.pdf</code></div>
+        <div>正则可自定义；若你的团队规范不同，可直接替换下方表达式。</div>
+      </div>
+
+      <div class="row">
+        <label for="pattern"><strong>命名规范正则</strong></label>
+        <input id="pattern" value="^[A-Z0-9]+_[^_]+_[^_]+_V[0-9]+_[0-9]{8}\.[A-Za-z0-9]+$" />
+      </div>
+
+      <div class="row">
+        <label for="filenames"><strong>文件名列表（每行一个）</strong></label>
+        <textarea id="filenames" placeholder="例如：&#10;PRJ01_需求文档_登录流程_V1_20260508.pdf&#10;登录流程最终版.pdf&#10;PRJ01_设计稿_主页_V3_20260508.fig"></textarea>
+      </div>
+
+      <div class="buttons">
+        <button id="validateBtn">开始校验</button>
+        <button class="secondary" id="fillDemoBtn">填充示例</button>
+        <button class="secondary" id="clearBtn">清空</button>
+      </div>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <script>
+      const validateBtn = document.getElementById('validateBtn');
+      const fillDemoBtn = document.getElementById('fillDemoBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const filenamesEl = document.getElementById('filenames');
+      const patternEl = document.getElementById('pattern');
+      const resultEl = document.getElementById('result');
+
+      function escapeHtml(str) {
+        return str
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      function validate() {
+        const text = filenamesEl.value.trim();
+        if (!text) {
+          resultEl.innerHTML = '<p class="bad">请先输入文件名。</p>';
+          return;
+        }
+
+        let regex;
+        try {
+          regex = new RegExp(patternEl.value.trim());
+        } catch (error) {
+          resultEl.innerHTML = `<p class="bad">正则表达式无效：${escapeHtml(error.message)}</p>`;
+          return;
+        }
+
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        const rows = lines.map((name) => {
+          const ok = regex.test(name);
+          return {
+            name,
+            ok,
+            reason: ok ? '符合规范' : '不符合规范（建议改名后再上传）'
+          };
+        });
+
+        const passCount = rows.filter(r => r.ok).length;
+        const failCount = rows.length - passCount;
+
+        const body = rows.map((r, idx) => `
+          <tr>
+            <td>${idx + 1}</td>
+            <td><code>${escapeHtml(r.name)}</code></td>
+            <td class="${r.ok ? 'ok' : 'bad'}">${r.ok ? '通过' : '不通过'}</td>
+            <td>${r.reason}</td>
+          </tr>
+        `).join('');
+
+        resultEl.innerHTML = `
+          <p>总计 <strong>${rows.length}</strong> 个文件名：<span class="ok">通过 ${passCount}</span>，<span class="bad">不通过 ${failCount}</span></p>
+          <table>
+            <thead>
+              <tr><th>#</th><th>文件名</th><th>结果</th><th>说明</th></tr>
+            </thead>
+            <tbody>${body}</tbody>
+          </table>
+        `;
+      }
+
+      fillDemoBtn.addEventListener('click', () => {
+        filenamesEl.value = [
+          'PRJ01_需求文档_登录流程_V1_20260508.pdf',
+          '登录流程最终版.pdf',
+          'PRJ01_设计稿_主页_V3_20260508.fig',
+          'PRJ_会议纪要_周会_V2_20261301.docx'
+        ].join('\n');
+      });
+
+      clearBtn.addEventListener('click', () => {
+        filenamesEl.value = '';
+        resultEl.innerHTML = '';
+      });
+
+      validateBtn.addEventListener('click', validate);
+    </script>
+  </body>
+</html>
