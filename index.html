@@ -3,69 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>欧洲出差报销助手</title>
+  <title>欧洲出差报销助手 Pro</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="container">
-    <h1>欧洲出差报销助手</h1>
-    <p>把公司报销政策“前置”到行程中：出发前估算、出差中变更、回国后一键导出。</p>
+  <div class="bg-gradient"></div>
+  <header class="container hero">
+    <div>
+      <h1>欧洲出差报销助手 <span>Pro</span></h1>
+      <p>预估预算、记录变更、上传票据图片，回国报销不再翻车。</p>
+    </div>
+    <div class="hero-badge">政策前置 · 流程标准化 · 导出说明</div>
   </header>
 
   <main class="container grid">
-    <section class="card">
+    <section class="card glass">
       <h2>1) 行程与政策</h2>
       <div class="form-row">
         <label>出差城市</label>
         <select id="city"></select>
       </div>
-      <div class="form-row">
-        <label>出发日期</label>
-        <input id="startDate" type="date" />
+      <div class="split">
+        <div class="form-row">
+          <label>出发日期</label>
+          <input id="startDate" type="date" />
+        </div>
+        <div class="form-row">
+          <label>返回日期</label>
+          <input id="endDate" type="date" />
+        </div>
       </div>
-      <div class="form-row">
-        <label>返回日期</label>
-        <input id="endDate" type="date" />
+      <div class="split">
+        <div class="form-row">
+          <label>机票预算 (€)</label>
+          <input id="flightBase" type="number" min="0" step="0.01" value="800" />
+        </div>
+        <div class="form-row">
+          <label>酒店预算/晚 (€)</label>
+          <input id="hotelPerNight" type="number" min="0" step="0.01" value="180" />
+        </div>
       </div>
-      <div class="form-row">
-        <label>机票预算 (€)</label>
-        <input id="flightBase" type="number" min="0" step="0.01" value="800" />
-      </div>
-      <div class="form-row">
-        <label>酒店预算/晚 (€)</label>
-        <input id="hotelPerNight" type="number" min="0" step="0.01" value="180" />
-      </div>
-      <button id="estimateBtn">生成预算</button>
+      <button id="estimateBtn" class="primary">生成预算</button>
     </section>
 
-    <section class="card">
-      <h2>2) 出差中费用变更</h2>
-      <div class="form-row">
-        <label>更换酒店附加费用 (€)</label>
-        <input id="hotelChange" type="number" min="0" step="0.01" value="0" />
-      </div>
-      <div class="form-row">
-        <label>机票改签费用 (€)</label>
-        <input id="flightChange" type="number" min="0" step="0.01" value="0" />
+    <section class="card glass">
+      <h2>2) 出差中变更 + 票据上传</h2>
+      <div class="split">
+        <div class="form-row">
+          <label>更换酒店附加费用 (€)</label>
+          <input id="hotelChange" type="number" min="0" step="0.01" value="0" />
+        </div>
+        <div class="form-row">
+          <label>机票改签费用 (€)</label>
+          <input id="flightChange" type="number" min="0" step="0.01" value="0" />
+        </div>
       </div>
       <div class="form-row">
         <label>额外交通（打车等） (€)</label>
         <input id="extraTransport" type="number" min="0" step="0.01" value="0" />
       </div>
-      <button id="updateBtn">更新总额</button>
+
+      <div class="form-row">
+        <label>上传票据图片（可多张）</label>
+        <input id="receiptUpload" type="file" accept="image/*" multiple />
+      </div>
+      <div id="receiptPreview" class="preview-grid"></div>
+
+      <button id="updateBtn" class="secondary">更新总额</button>
     </section>
 
-    <section class="card result" id="resultCard">
+    <section class="card result">
       <h2>3) 报销估算结果</h2>
-      <ul id="summaryList"></ul>
+      <ul id="summaryList" class="list"></ul>
       <h3>政策提醒</h3>
-      <ul id="policyTips"></ul>
-      <button id="exportBtn">导出报销说明（文本）</button>
+      <ul id="policyTips" class="list"></ul>
+      <button id="exportBtn" class="primary">导出报销说明（文本）</button>
     </section>
   </main>
 
-  <footer class="container">
-    <small>提示：请定期维护城市政策配置，确保与公司最新制度一致。</small>
+  <footer class="container footer">
+    <small>提示：请定期同步公司政策，票据图片仅本地预览，不会上传到服务器。</small>
   </footer>
 
   <script src="app.js"></script>

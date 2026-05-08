@@ -173,3 +173,23 @@ document.getElementById('updateBtn').addEventListener('click', () => {
 });
 
 document.getElementById('exportBtn').addEventListener('click', exportText);
+
+
+const receiptUploadEl = document.getElementById('receiptUpload');
+const receiptPreviewEl = document.getElementById('receiptPreview');
+
+function renderReceiptPreview(files) {
+  receiptPreviewEl.innerHTML = '';
+  Array.from(files).forEach((file) => {
+    if (!file.type.startsWith('image/')) return;
+    const img = document.createElement('img');
+    img.alt = file.name;
+    img.src = URL.createObjectURL(file);
+    img.onload = () => URL.revokeObjectURL(img.src);
+    receiptPreviewEl.appendChild(img);
+  });
+}
+
+receiptUploadEl.addEventListener('change', (e) => {
+  renderReceiptPreview(e.target.files);
+});
