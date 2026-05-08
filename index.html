@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>欧洲出差报销助手</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="container">
+    <h1>欧洲出差报销助手</h1>
+    <p>把公司报销政策“前置”到行程中：出发前估算、出差中变更、回国后一键导出。</p>
+  </header>
+
+  <main class="container grid">
+    <section class="card">
+      <h2>1) 行程与政策</h2>
+      <div class="form-row">
+        <label>出差城市</label>
+        <select id="city"></select>
+      </div>
+      <div class="form-row">
+        <label>出发日期</label>
+        <input id="startDate" type="date" />
+      </div>
+      <div class="form-row">
+        <label>返回日期</label>
+        <input id="endDate" type="date" />
+      </div>
+      <div class="form-row">
+        <label>机票预算 (€)</label>
+        <input id="flightBase" type="number" min="0" step="0.01" value="800" />
+      </div>
+      <div class="form-row">
+        <label>酒店预算/晚 (€)</label>
+        <input id="hotelPerNight" type="number" min="0" step="0.01" value="180" />
+      </div>
+      <button id="estimateBtn">生成预算</button>
+    </section>
+
+    <section class="card">
+      <h2>2) 出差中费用变更</h2>
+      <div class="form-row">
+        <label>更换酒店附加费用 (€)</label>
+        <input id="hotelChange" type="number" min="0" step="0.01" value="0" />
+      </div>
+      <div class="form-row">
+        <label>机票改签费用 (€)</label>
+        <input id="flightChange" type="number" min="0" step="0.01" value="0" />
+      </div>
+      <div class="form-row">
+        <label>额外交通（打车等） (€)</label>
+        <input id="extraTransport" type="number" min="0" step="0.01" value="0" />
+      </div>
+      <button id="updateBtn">更新总额</button>
+    </section>
+
+    <section class="card result" id="resultCard">
+      <h2>3) 报销估算结果</h2>
+      <ul id="summaryList"></ul>
+      <h3>政策提醒</h3>
+      <ul id="policyTips"></ul>
+      <button id="exportBtn">导出报销说明（文本）</button>
+    </section>
+  </main>
+
+  <footer class="container">
+    <small>提示：请定期维护城市政策配置，确保与公司最新制度一致。</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
